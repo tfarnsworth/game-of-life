@@ -75,29 +75,27 @@ void AGrid::AdvanceGameState()
 	bool CurrentPopulatedStates[20][20];
 	memcpy(CurrentPopulatedStates, PopulatedStates, sizeof(PopulatedStates));
 
-	for (int32 xIndex = 0; xIndex < GridSize; xIndex++)
+	for (int32 RowIndex = 0; RowIndex < GridSize; RowIndex++)
 	{
-		for (int32 yIndex = 0; yIndex < GridSize; yIndex++)
+		for (int32 ColumnIndex = 0; ColumnIndex < GridSize; ColumnIndex++)
 		{
 			int32 NeighborCount = 0;
 
 			// Determine the bounds for checking neighbors and prevent checking outside the edges of the grid
-			int32 LowerBoundX = xIndex - 1 > 0 ? xIndex - 1 : 0;
-			int32 UpperBoundX = xIndex + 1 < GridSize ? xIndex + 1 : GridSize - 1;
-			int32 LowerBoundY = yIndex - 1 > 0 ? yIndex - 1 : 0;
-			int32 UpperBoundY = yIndex + 1 < GridSize ? yIndex + 1 : GridSize - 1;
+			int32 LowerBoundX = RowIndex - 1 > 0 ? RowIndex - 1 : 0;
+			int32 UpperBoundX = RowIndex + 1 < GridSize ? RowIndex + 1 : GridSize - 1;
+			int32 LowerBoundY = ColumnIndex - 1 > 0 ? ColumnIndex - 1 : 0;
+			int32 UpperBoundY = ColumnIndex + 1 < GridSize ? ColumnIndex + 1 : GridSize - 1;
 
 			// Loop through neighbors
-			for (int32 i = LowerBoundX; i <= UpperBoundX; i++)
+			for (int32 NeighborRowIndex = LowerBoundX; NeighborRowIndex <= UpperBoundX; NeighborRowIndex++)
 			{
-				for (int32 j = LowerBoundY; j <= UpperBoundY; j++)
+				for (int32 NeighborColumnIndex = LowerBoundY; NeighborColumnIndex <= UpperBoundY; NeighborColumnIndex++)
 				{
 					//Skip the calculation if this is the current tile
-					if (i == xIndex && j == yIndex) { continue; }
-					if (xIndex == 1 && yIndex == 0) {
-						bool TheState = CurrentPopulatedStates[i][j];
-					}
-					if (CurrentPopulatedStates[i][j] == true)
+					if (NeighborRowIndex == RowIndex && NeighborColumnIndex == ColumnIndex) { continue; }
+					// If the neighbor is populated, increment the neighbor count
+					if (CurrentPopulatedStates[NeighborRowIndex][NeighborColumnIndex] == true)
 					{
 						NeighborCount++;
 					}
@@ -105,14 +103,14 @@ void AGrid::AdvanceGameState()
 			}
 
 			// Get current tile
-			AClickableTile* CurrentTile = Grid[xIndex][yIndex];
+			AClickableTile* CurrentTile = Grid[RowIndex][ColumnIndex];
 			UTile* CurrentTileMesh = CurrentTile->FindComponentByClass<UTile>();
 
 			// If the current tile is populated and has less than two or greater than 3 neighbors, it dies
 			// Or if the current tile is not populated and has three neighbors, it becomes populated
 			// Use the map of boolean states to calculate everything based on the current generation
-			if ((CurrentPopulatedStates[xIndex][yIndex] == true && (NeighborCount < 2 || NeighborCount > 3))
-			|| (CurrentPopulatedStates[xIndex][yIndex] == false && NeighborCount == 3))
+			if ((CurrentPopulatedStates[RowIndex][ColumnIndex] == true && (NeighborCount < 2 || NeighborCount > 3))
+			|| (CurrentPopulatedStates[RowIndex][ColumnIndex] == false && NeighborCount == 3))
 			{
 				CurrentTileMesh->TogglePopulated();
 			}	
@@ -124,15 +122,15 @@ void AGrid::ResetGame()
 {
 	PauseGame();
 	
-	for (int32 Row = 0; Row < GridSize; Row++)
+	for (int32 RowIndex = 0; RowIndex < GridSize; RowIndex++)
 	{
-		for (int32 Column = 0; Column < GridSize; Column++)
+		for (int32 ColumnIndex = 0; ColumnIndex < GridSize; ColumnIndex++)
 		{
 			// Reset stored boolean states for population
-			PopulatedStates[Row][Column] = false;
+			PopulatedStates[RowIndex][ColumnIndex] = false;
 
 			// Reset tile states in grid
-			AClickableTile* CurrentTile = Grid[Row][Column];
+			AClickableTile* CurrentTile = Grid[RowIndex][ColumnIndex];
 			UTile* CurrentTileMesh = CurrentTile->FindComponentByClass<UTile>();
 			if (CurrentTileMesh->Populated)
 			{
