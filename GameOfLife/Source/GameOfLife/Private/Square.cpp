@@ -1,22 +1,21 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Tile.h"
+#include "Square.h"
 #include "Components/StaticMeshComponent.h"
 #include "Materials/MaterialInstance.h"
 #include "UObject/ConstructorHelpers.h"
-#include "ClickableTile.h"
 #include "Grid.h"
 
-UTile::UTile()
+ASquare::ASquare()
 {
 	struct FConstructorStatics
 	{
-		ConstructorHelpers::FObjectFinderOptional<UStaticMesh> TileMesh;
+		ConstructorHelpers::FObjectFinderOptional<UStaticMesh> SquareMesh;
 		ConstructorHelpers::FObjectFinderOptional<UMaterial> BaseMaterial;
 		ConstructorHelpers::FObjectFinderOptional<UMaterialInstance> YellowMaterial;
 		FConstructorStatics()
-			: TileMesh(TEXT("/Game/Meshes/Tile.Tile"))
+			: SquareMesh(TEXT("/Game/Meshes/Tile.Tile"))
 			, BaseMaterial(TEXT("/Game/Materials/BaseMaterial.BaseMaterial"))
 			, YellowMaterial(TEXT("/Game/Materials/YellowMaterial.YellowMaterial"))
 		{
@@ -26,32 +25,37 @@ UTile::UTile()
 	BaseMaterial = ConstructorStatics.BaseMaterial.Get();
 	YellowMaterial = ConstructorStatics.YellowMaterial.Get();
 
-	SetStaticMesh(ConstructorStatics.TileMesh.Get());
-	SetMaterial(0, BaseMaterial);
-	SetRelativeScale3D(FVector(0.5f, 0.5f, 0.5f));
+	SquareMeshComponent = GetStaticMeshComponent();
+	SquareMeshComponent->SetStaticMesh(ConstructorStatics.SquareMesh.Get());
+	SquareMeshComponent->SetMaterial(0, BaseMaterial);
+	SquareMeshComponent->SetRelativeScale3D(FVector(0.5f, 0.5f, 0.5f));
 }
 
-void UTile::TogglePopulated()
+// Set populated state, notify parent grid of the change, and update the material to visually represent state
+void ASquare::TogglePopulated()
 {
+	UE_LOG(LogTemp, Warning, TEXT("Toggling populated"));
 	Populated = !Populated;
 	Grid->UpdatePopulatedState(Row, Column, Populated);
 	if (Populated)
 	{
-		SetMaterial(0, YellowMaterial);
+		SquareMeshComponent->SetMaterial(0, YellowMaterial);
 	}
 	else
 	{
-		SetMaterial(0, BaseMaterial);
+		SquareMeshComponent->SetMaterial(0, BaseMaterial);
 	}
 }
 
-void UTile::SetGridCoordinates(int32 RowToSet, int32 ColumnToSet)
+// Stores this square's location in the grid
+void ASquare::SetGridCoordinates(int32 RowToSet, int32 ColumnToSet)
 {
 	Row = RowToSet;
 	Column = ColumnToSet;
 }
 
-void UTile::SetParentGrid(AGrid* GridToSet)
+// Stores a reference to the parent grid
+void ASquare::SetParentGrid(AGrid* GridToSet)
 {
 	Grid = GridToSet;
 }

@@ -7,8 +7,7 @@
 #include "Grid.generated.h"
 
 //Forward declarations
-class AClickableTile;
-class UTile;
+class ASquare;
 
 UCLASS()
 class GAMEOFLIFE_API AGrid : public AActor
@@ -28,13 +27,13 @@ private:
 	const int32 GridSize = 20;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Setup")
-	TSubclassOf<AClickableTile> ClickableTile;
+	TSubclassOf<ASquare> Square;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Setup")
 	float GameTickSpeed = 5.f;
 
 	//TODO initialize arrays using grid size
-	AClickableTile* Grid[20][20];
+	ASquare* Grid[20][20];
 	bool PopulatedStates[20][20];
 	void InitializeGrid();
 	

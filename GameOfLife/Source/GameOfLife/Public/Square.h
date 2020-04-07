@@ -3,24 +3,25 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Components/StaticMeshComponent.h"
-#include "Tile.generated.h"
+#include "Engine/StaticMeshActor.h"
+#include "Square.generated.h"
 
 //Forward declaration
 class Material;
 class MaterialInstance;
+class StaticMeshComponent;
 class AGrid;
 
 /**
  * 
  */
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
-class GAMEOFLIFE_API UTile : public UStaticMeshComponent
+class GAMEOFLIFE_API ASquare : public AStaticMeshActor
 {
 	GENERATED_BODY()
-	
+
 public:
-	UTile();
+	ASquare();
 
 	// Toggles populated state and updates material accordingly
 	UFUNCTION(BlueprintCallable, Category = Input)
@@ -33,12 +34,14 @@ public:
 	void SetParentGrid(AGrid* GridToSet);
 
 	bool Populated = false;
-	
+
 
 private:
+	UStaticMeshComponent* SquareMeshComponent;
 	UMaterial* BaseMaterial;
 	UMaterialInstance* YellowMaterial;
 	int32 Row;
 	int32 Column;
 	AGrid* Grid;
+	
 };

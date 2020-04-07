@@ -10,8 +10,8 @@ UCLASS()
 class GAMEOFLIFE_API AClickableTile : public AActor
 {
 	GENERATED_BODY()
-	
-public:	
+
+public:
 	// Sets default values for this actor's properties
 	AClickableTile();
 
